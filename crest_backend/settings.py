@@ -10,7 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+import dj_database_url
+from environ import Env
 from pathlib import Path
+
+env = Env()
+Env.read_env()
+ENVIRONMENT = env('ENVIRONMENT', default='production')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,12 +26,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o4j-+prv*$ixt3$w54utodo9&h9ytm*^$rbt62t_pil8nl0*l7'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == 'development':
+    DEBUG = True
+else:
+    DEBUG = False
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["localhost", "crest-backend.onrender.com"]
+CSRF_TRUSTED_ORIGINS = ["https://crest-backend.onrender.com/", ]
 
 
 # Application definition
@@ -79,6 +89,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+if ENVIRONMENT == 'production':
+    DATABASES['default'] = dj_database_url.parse(env('DATABASE_URL'))
 
 
 # Password validation
