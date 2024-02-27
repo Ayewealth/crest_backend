@@ -34,8 +34,8 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', "crest-backend.onrender.com", 'crestbackend.up.railway.app', 'crest-rho.vercel.app']
-CSRF_TRUSTED_ORIGINS = ['https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app/' ]
+ALLOWED_HOSTS = ['*']
+# CSRF_TRUSTED_ORIGINS = ['https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app/' ]
 
 
 # Application definition
