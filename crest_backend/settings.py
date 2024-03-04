@@ -18,7 +18,7 @@ import os
 env = Env()
 Env.read_env()
 ENVIRONMENT = env('ENVIRONMENT', default='production')
-POSTGRES_LOCALLY = False
+POSTGRES_LOCALLY = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'cloudinary_storage',
     'cloudinary',
+    'corsheaders',
 
     # apps
     'base',
@@ -73,6 +74,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    'corsheaders.middleware.CorsMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -188,3 +190,7 @@ if ENVIRONMENT == "production" or POSTGRES_LOCALLY == True:
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "https://crest-rho.vercel.app/"
+]
