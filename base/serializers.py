@@ -13,8 +13,10 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         if not user.is_verified:
             raise serializers.ValidationError('Email not verified. Please check your email for the verification link.')
 
-        if user.profile_picture:
-            data['profile_picture'] = static(user.profile_picture.url)
+        # Check if the user has a profile_picture before accessing it
+        profile_picture = getattr(user, 'profile_picture', None)
+        if profile_picture:
+            data['profile_picture'] = static(profile_picture.url)
 
         return data
 

@@ -18,7 +18,7 @@ import os
 env = Env()
 Env.read_env()
 ENVIRONMENT = env('ENVIRONMENT', default='production')
-POSTGRES_LOCALLY = True
+POSTGRES_LOCALLY = False
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,9 +36,14 @@ if ENVIRONMENT == 'development':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'crest-backend.onrender.com', 'crestbackend.up.railway.app']
+if ENVIRONMENT == "production" or POSTGRES_LOCALLY == True:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'crest-backend.onrender.com', 'crestbackend.up.railway.app']
+    CSRF_TRUSTED_ORIGINS = ['https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app/' ]
+else:
+    ALLOWED_HOSTS = ["*"]
 
-CSRF_TRUSTED_ORIGINS = ['https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app/' ]
+
+
 
 
 # Application definition
