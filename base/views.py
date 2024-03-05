@@ -78,6 +78,7 @@ class VerificationMail(generics.GenericAPIView):
         except jwt.ExpiredSignatureError as identifier:
             print("Expired Signature Error:", identifier)
             redirect_url = "https://crest-rho.vercel.app/confirmation-mail"
+            return redirect(redirect_url)
             # return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             print("Decode Error:", identifier)
