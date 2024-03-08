@@ -29,7 +29,7 @@ def endpoints(request):
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
-class UserListCreateApiView(generics.ListCreateAPIView):
+class UserCreateApiView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
@@ -58,6 +58,11 @@ class UserListCreateApiView(generics.ListCreateAPIView):
 
         return response
     
+
+class UserListApiView(generics.ListAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
 class UserRetrieveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
