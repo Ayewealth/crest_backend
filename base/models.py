@@ -26,7 +26,7 @@ class CustomUserManager(BaseUserManager):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Profile picture field
-    profile_picture = models.ImageField(upload_to='profile_pics', blank=True)
+    profile_picture = models.ImageField(upload_to='profile_pics', blank=True, null=True)
 
     # User Detail fields
     first_name = models.CharField(max_length=30, blank=True)
@@ -35,9 +35,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     # Kyc related fields 
     identification_type = models.CharField(max_length=50, blank=True, choices=[("national_id", "National ID"), ("passport", "International Passport")])
-    identification_document = models.ImageField(upload_to='kyc', blank=True)
+    identification_document = models.ImageField(upload_to='kyc', blank=True,null=True)
     address_document_type = models.CharField(max_length=50, blank=True, choices=[("utility_bill", "Utility Bill"), ("bank_reference", "Bank Reference"), ("proof_of_residence", "Proof of Residence"), ("permit", "Driver or Residence Permit")])
-    address_document = models.ImageField(upload_to='kyc', blank=True)
+    address_document = models.ImageField(upload_to='kyc', blank=True, null=True)
 
 
     is_verified = models.BooleanField(default=False)

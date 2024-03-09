@@ -18,6 +18,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         if profile_picture:
             data['profile_picture'] = static(profile_picture.url)
 
+        data['kyc_verified'] = user.kyc_verified
+
         return data
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,34 +41,19 @@ class UserSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {
             'password': {'write_only': True},
+            'profile_picture': {'allow_null': True},
         }
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
+        password = validated_data.pop('password', None)
 
         user = super().create(validated_data)
-        user.set_password(password)
-        user.save()
+
+        if password:
+            user.set_password(password)
+            user.save()
 
         return user
-
-    # def update(self, instance, validated_data):
-    #     # Handle partial updates
-    #     instance.first_name = validated_data.get('first_name', instance.first_name)
-    #     instance.last_name = validated_data.get('last_name', instance.last_name)
-    #     instance.email = validated_data.get('email', instance.email)
-    #     instance.is_verified = validated_data.get('is_verified', instance.is_verified)
-    #     instance.kyc_verified = validated_data.get('kyc_verified', instance.kyc_verified)
-    #     instance.identification_type = validated_data.get('identification_type', instance.identification_type)
-    #     instance.address_document_type = validated_data.get('address_document_type', instance.address_document_type)
-
-    #     # Handle file uploads
-    #     instance.identification_document = validated_data.get('identification_document', instance.identification_document)
-    #     instance.address_document = validated_data.get('address_document', instance.address_document)
-
-    #     instance.save()
-
-    #     return instance
 
 class ResendVerificationEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
