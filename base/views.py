@@ -1,3 +1,6 @@
+from .utils import Util
+from .serializers import *
+from .models import *
 from django.shortcuts import get_object_or_404, redirect
 from rest_framework import generics, status
 from rest_framework.response import Response
@@ -12,11 +15,9 @@ from environ import Env
 env = Env()
 env.read_env()
 
-from .models import *
-from .serializers import *
-from .utils import Util
 
 # Create your views here.
+
 @api_view(['Get'])
 def endpoints(request):
     data = [
@@ -26,8 +27,10 @@ def endpoints(request):
     ]
     return Response(data)
 
+
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
 
 class UserCreateApiView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
@@ -48,7 +51,8 @@ class UserCreateApiView(generics.CreateAPIView):
 
             current_site = get_current_site(request).domain
             relative_link = reverse('email-verify')
-            absurl = 'http://' + current_site + relative_link + "?token=" + str(token['access'])
+            absurl = 'http://' + current_site + \
+                relative_link + "?token=" + str(token['access'])
             email_body = 'Hi ' + user.first_name + \
                 ' Use the link below to verify your email \n' + absurl
             email_data = {'email_body': email_body, 'to_email': user.email,
@@ -57,11 +61,12 @@ class UserCreateApiView(generics.CreateAPIView):
             Util.send_email(email_data)
 
         return response
-    
+
 
 class UserListApiView(generics.ListAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
+
 
 class UserRetrieveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CustomUser.objects.all()
@@ -78,12 +83,14 @@ class UserRetrieveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
         request_data = request.data.copy()
         request_data.pop('password', None)
 
-        serializer = self.get_serializer(instance, data=request_data, partial=True)
+        serializer = self.get_serializer(
+            instance, data=request_data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+
 class VerificationMail(generics.GenericAPIView):
     def get(self, request):
         token = request.GET.get('token')
@@ -107,7 +114,8 @@ class VerificationMail(generics.GenericAPIView):
         except CustomUser.DoesNotExist:
             print("User not found")
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-        
+
+
 class ResendVerificationEmailView(generics.GenericAPIView):
     serializer_class = ResendVerificationEmailSerializer
 
@@ -128,7 +136,8 @@ class ResendVerificationEmailView(generics.GenericAPIView):
 
             current_site = get_current_site(request).domain
             relative_link = reverse('email-verify')
-            absurl = 'http://' + current_site + relative_link + "?token=" + str(token['access'])
+            absurl = 'http://' + current_site + \
+                relative_link + "?token=" + str(token['access'])
             email_body = 'Hi ' + user.first_name + \
                 ' Use the link below to verify your email \n' + absurl
             email_data = {'email_body': email_body, 'to_email': user.email,
