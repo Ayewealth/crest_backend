@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.templatetags.static import static
+from django.utils.dateformat import DateFormat
 
 from .models import *
 
@@ -26,6 +27,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+    date_joined_formatted = serializers.SerializerMethodField()
+
     class Meta:
         model = CustomUser
         fields = [
@@ -41,6 +44,8 @@ class UserSerializer(serializers.ModelSerializer):
             'identification_document',
             'address_document_type',
             'address_document',
+            'date_joined',
+            'date_joined_formatted'
         ]
         extra_kwargs = {
             'password': {'write_only': True},
@@ -57,6 +62,10 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
+    def get_date_joined_formatted(self, obj):
+        # Format the date_joined field as "June 22, 2020"
+        return DateFormat(obj.date_joined).format('F j, Y')
 
 
 class ResendVerificationEmailSerializer(serializers.Serializer):
