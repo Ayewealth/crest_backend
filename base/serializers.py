@@ -18,7 +18,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         # Check if the user has a profile_picture before accessing it
         profile_picture = getattr(user, 'profile_picture', None)
         if profile_picture:
-            data['profile_picture'] = user.profile_picture
+            data['profile_picture'] = profile_picture.url
 
         data['kyc_verified'] = user.kyc_verified
 
