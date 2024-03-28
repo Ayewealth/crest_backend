@@ -5,22 +5,25 @@ from django.templatetags.static import static
 
 from .models import *
 
+
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        
+
         user = self.user
         if not user.is_verified:
-            raise serializers.ValidationError('Email not verified. Please check your email for the verification link.')
+            raise serializers.ValidationError(
+                'Email not verified. Please check your email for the verification link.')
 
         # Check if the user has a profile_picture before accessing it
         profile_picture = getattr(user, 'profile_picture', None)
         if profile_picture:
-            data['profile_picture'] = static(profile_picture.url)
+            data['profile_picture'] = user.profile_picture
 
         data['kyc_verified'] = user.kyc_verified
 
         return data
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,6 +57,7 @@ class UserSerializer(serializers.ModelSerializer):
             user.save()
 
         return user
+
 
 class ResendVerificationEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
