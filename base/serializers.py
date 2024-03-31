@@ -48,7 +48,7 @@ class UserSerializer(serializers.ModelSerializer):
             'date_joined_formatted'
         ]
         extra_kwargs = {
-            'password': {'write_only': True},
+            # 'password': {'write_only': True},
             'profile_picture': {'allow_null': True},
         }
 

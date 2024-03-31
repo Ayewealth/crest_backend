@@ -80,8 +80,39 @@ class UserRetrieveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
         instance = self.get_object()
 
         # Exclude 'password' from the request data
-        request_data = request.data.copy()
-        request_data.pop('password', None)
+        fields_to_exclude = []
+
+        # Include all other fields in the request data
+        request_data = {
+            key: value for key, value in request.data.items()
+            if key not in fields_to_exclude
+        }
+
+        # Check if the image fields are provided in the request data
+        if 'profile_picture' in request.data:
+            profile_picture = request.FILES.get('profile_picture')
+            if profile_picture:
+                # Update the profile picture if provided
+                request_data['profile_picture'] = profile_picture
+            else:
+                # Retain the existing profile picture
+                request_data['profile_picture'] = instance.profile_picture
+
+        # Similarly, check and update other image fields as needed
+        if 'identification_document' in request.data:
+            identification_document = request.FILES.get(
+                'identification_document')
+            if identification_document:
+                request_data['identification_document'] = identification_document
+            else:
+                request_data['identification_document'] = instance.identification_document
+
+        if 'address_document' in request.data:
+            address_document = request.FILES.get('address_document')
+            if address_document:
+                request_data['address_document'] = address_document
+            else:
+                request_data['address_document'] = instance.address_document
 
         serializer = self.get_serializer(
             instance, data=request_data, partial=True)
