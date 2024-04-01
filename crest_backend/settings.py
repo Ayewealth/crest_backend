@@ -194,7 +194,7 @@ else:
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://crest-rho.vercel.app",
-    "https://crestholdingsltd.com",
+    # "https://crestholdingsltd.com",
 ]
 
 SIMPLE_JWT = {
