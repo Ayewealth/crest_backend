@@ -39,9 +39,9 @@ else:
 
 if ENVIRONMENT == "production" or POSTGRES_LOCALLY == True:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1',
-                     'crest-backend.onrender.com', 'crestbackend.up.railway.app', "crestholdingsltd.com"]
+                     'crest-backend.onrender.com', 'crestbackend.up.railway.app',]
     CSRF_TRUSTED_ORIGINS = [
-        'https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app/', 'https://crestholdingsltd.com/']
+        'https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app/',]
 else:
     ALLOWED_HOSTS = ["*"]
 
@@ -194,7 +194,7 @@ else:
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "https://crest-rho.vercel.app",
-    "https://crestholdingsltd.com"
+    "https://crestholdingsltd.com",
 ]
 
 SIMPLE_JWT = {
