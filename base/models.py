@@ -30,7 +30,7 @@ class CustomUserManager(BaseUserManager):
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     # Profile picture field
     profile_picture = models.ImageField(
-        upload_to='profile_pics', default='profile-picture', blank=True, null=True)
+        upload_to='profile_pics', default='default.png')
 
     # User Detail fields
     first_name = models.CharField(max_length=30, blank=True)
