@@ -193,6 +193,12 @@ class UserProfileListApiView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
 
 
+class UserProfileRetriveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    lookup_field = 'pk'
+
+
 class WalletListApiView(generics.ListAPIView):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
