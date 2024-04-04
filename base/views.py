@@ -204,6 +204,11 @@ class WalletListApiView(generics.ListAPIView):
     serializer_class = WalletSerializer
 
 
+class InvestmentListCreateApiView(generics.ListCreateAPIView):
+    queryset = Investment.objects.all()
+    serializer_class = InvestmentSerializer
+
+
 class InvestmentSubscriptionListCreateApiView(generics.ListCreateAPIView):
     queryset = InvestmentSubscription.objects.all()
     serializer_class = InvestmentSubscriptionSerializer

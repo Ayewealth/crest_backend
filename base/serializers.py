@@ -81,6 +81,19 @@ class WalletSerializer(serializers.ModelSerializer):
         ]
 
 
+class InvestmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Investment
+        fields = [
+            'id',
+            'plan',
+            'daily_return_rate',
+            'duration_days',
+            'minimum_amount',
+            'maximum_amount'
+        ]
+
+
 class InvestmentSubscriptionSerializer(serializers.ModelSerializer):
     subscription_date = serializers.SerializerMethodField()
     end_date = serializers.SerializerMethodField()
@@ -128,6 +141,7 @@ class InvestmentSubscriptionSerializer(serializers.ModelSerializer):
 
 class TransactionSerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField()
+    wallet_title = serializers.SerializerMethodField()
 
     class Meta:
         model = Transaction
@@ -136,6 +150,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'transaction_type',
             'user',
             'wallet',
+            'wallet_title',
             'amount',
             'status',
             'date'
@@ -144,6 +159,10 @@ class TransactionSerializer(serializers.ModelSerializer):
     def get_date(self, obj):
         # Format the date_joined field as "June 22, 2020"
         return DateFormat(obj.date).format('F j, Y')
+
+    def get_wallet_title(self, obj):
+        # Access the title field of the wallet object
+        return obj.wallet.title
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
