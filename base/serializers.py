@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -38,6 +39,7 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'email',
             'password',
+            'is_superuser',
             'is_verified',
             'kyc_verified',
             'identification_type',
@@ -170,6 +172,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     wallets = serializers.SerializerMethodField()
     transactions = serializers.SerializerMethodField()
     investment = serializers.SerializerMethodField()
+    total_wallet_balance = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -178,8 +181,17 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'user',
             'wallets',
             'transactions',
-            'investment'
+            'investment',
+            'total_wallet_balance'
         ]
+
+    def get_total_wallet_balance(self, user_profile):
+        # Get all wallets belonging to the user profile
+        wallets = Wallet.objects.filter(user=user_profile.user)
+        # Calculate the total balance by summing the balances of all wallets
+        total_balance = sum(wallet.balance for wallet in wallets)
+        # Return the total balance as a Decimal
+        return Decimal(total_balance)
 
     def get_wallets(self, wallet):
         wallets = Wallet.objects.filter(user=wallet.user)
