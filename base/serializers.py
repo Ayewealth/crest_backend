@@ -99,6 +99,8 @@ class InvestmentSerializer(serializers.ModelSerializer):
 class InvestmentSubscriptionSerializer(serializers.ModelSerializer):
     subscription_date = serializers.SerializerMethodField()
     end_date = serializers.SerializerMethodField()
+    wallet_title = serializers.SerializerMethodField()
+    investment_plan_plan = serializers.SerializerMethodField()
 
     class Meta:
         model = InvestmentSubscription
@@ -106,7 +108,9 @@ class InvestmentSubscriptionSerializer(serializers.ModelSerializer):
             'id',
             'user',
             'investment_plan',
+            'investment_plan_plan',
             'wallet',
+            'wallet_title',
             'amount',
             'subscription_date',
             'end_date',
@@ -131,6 +135,14 @@ class InvestmentSubscriptionSerializer(serializers.ModelSerializer):
                 f'Investment amount cannot exceed {maximum_amount} for the selected plan.')
 
         return data
+
+    def get_wallet_title(self, obj):
+        # Access the title field of the wallet object
+        return obj.wallet.title
+
+    def get_investment_plan_plan(self, obj):
+        # Access the title field of the wallet object
+        return obj.investment_plan.plan
 
     def get_subscription_date(self, obj):
         # Format the date_joined field as "June 22, 2020"
