@@ -245,7 +245,7 @@ class InvestmentSubscriptionListCreateApiView(generics.ListCreateAPIView):
         investment_subscription_data = {
             'user': request.user.id,
             'wallet': wallet_id,
-            'investment_plan': investment_plan_id,
+            'investment_plan': investment_plan,
             'amount': amount
         }
         serializer = self.get_serializer(data=investment_subscription_data)
@@ -291,7 +291,7 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
                 email_body = 'Hi ' + request.user.full_name() + \
                     ' Just Made a request please go approve or decline request \n'
                 email_data = {'email_body': email_body, 'to_email': superuser.email,
-                              'email_subject': 'Admin Mail'}
+                              'email_subject': 'Transaction Mail'}
 
                 Util.send_email(email_data)
 

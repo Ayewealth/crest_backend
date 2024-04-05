@@ -165,6 +165,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'user',
             'wallet',
             'wallet_title',
+            'wallet_address',
             'amount',
             'status',
             'date'
