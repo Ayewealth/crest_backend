@@ -245,7 +245,7 @@ class InvestmentSubscriptionListCreateApiView(generics.ListCreateAPIView):
         investment_subscription_data = {
             'user': request.user.id,
             'wallet': wallet_id,
-            'investment_plan': investment_plan,
+            'investment_plan': investment_plan_id,
             'amount': amount
         }
         serializer = self.get_serializer(data=investment_subscription_data)
