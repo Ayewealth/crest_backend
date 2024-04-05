@@ -220,28 +220,23 @@ class InvestmentSubscriptionListCreateApiView(generics.ListCreateAPIView):
         investment_plan_id = data.get('investment_plan')
         amount = data.get('amount')
 
-        # Check if wallet exists and belongs to the current user
         try:
             wallet = Wallet.objects.get(id=wallet_id, user=request.user)
         except Wallet.DoesNotExist:
             return Response({"error": "Wallet does not exist or does not belong to the current user"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Check if investment plan exists
         try:
             investment_plan = Investment.objects.get(id=investment_plan_id)
         except Investment.DoesNotExist:
             return Response({"error": "Investment plan does not exist"}, status=status.HTTP_400_BAD_REQUEST)
 
         amount_decimal = Decimal(amount)
-        # Check if the wallet has sufficient balance
         if wallet.balance < amount_decimal:
             return Response({"error": "Insufficient balance in the wallet"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Deduct the amount from the wallet balance
         wallet.balance -= amount_decimal
         wallet.save()
 
-        # Create the investment subscription
         investment_subscription_data = {
             'user': request.user.id,
             'wallet': wallet_id,
@@ -268,28 +263,21 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
         wallet_address = data.get('wallet_address')
         transaction_status = data.get('status')
 
-        # Check if wallet exists and belongs to the current user
         try:
             wallet = Wallet.objects.get(id=wallet_id, user=request.user)
         except Wallet.DoesNotExist:
             return Response({"error": "Wallet does not exist or does not belong to the current user"}, status=status.HTTP_400_BAD_REQUEST)
 
         amount_decimal = Decimal(amount)
-        # Check if the transaction amount is greater than zero
         if amount_decimal <= Decimal(0):
             return Response({"error": "Transaction amount must be greater than zero"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Update wallet balance based on transaction type and status
         if transaction_status == 'done' and transaction_type == 'deposit':
-            print("Before balance update:", wallet.balance)
             wallet.balance += amount_decimal
             wallet.save()
-            print("After balance update:", wallet.balance)
         elif transaction_status == 'done' and transaction_type == 'withdrawal':
-            print("Before balance update:", wallet.balance)
             wallet.balance -= amount_decimal
             wallet.save()
-            print("After balance update:", wallet.balance)
 
         if request.user.is_superuser:
             superusers = CustomUser.objects.filter(is_superuser=True)
@@ -301,7 +289,6 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
 
                 Util.send_email(email_data)
 
-        # Create the transaction with pending status
         transaction_data = {
             'user': request.user.id,
             'wallet': wallet_id,
@@ -328,27 +315,20 @@ class TransactionRetrieveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIV
             instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
 
-        # Check if the status is being updated
         old_status = instance.status
         new_status = request.data.get('status', old_status)
 
         if new_status != old_status:
-            # If status is being updated, check if it's changing to "done"
             if new_status == 'done' and instance.transaction_type == 'deposit':
-                # Update the wallet balance if the transaction is a deposit and status is becoming "done"
                 wallet = instance.wallet
                 amount = instance.amount
-                print("Before balance update:", wallet.balance)
                 wallet.balance += amount
                 wallet.save()
-                print("After balance update:", wallet.balance)
             elif new_status == "done" and instance.transaction_type == "withdrawal":
                 wallet = instance.wallet
                 amount = instance.amount
-                print("Before balance update:", wallet.balance)
                 wallet.balance -= amount
                 wallet.save()
-                print("After balance update:", wallet.balance)
 
         self.perform_update(serializer)
         return Response(serializer.data)
