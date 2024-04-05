@@ -23,6 +23,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             data['profile_picture'] = profile_picture.url
 
         data['kyc_verified'] = user.kyc_verified
+        data['is_superuser'] = user.is_superuser
 
         return data
 
