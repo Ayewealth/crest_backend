@@ -157,6 +157,7 @@ class InvestmentSubscriptionSerializer(serializers.ModelSerializer):
 class TransactionSerializer(serializers.ModelSerializer):
     date = serializers.SerializerMethodField()
     wallet_title = serializers.SerializerMethodField()
+    user_name = serializers.SerializerMethodField()
 
     class Meta:
         model = Transaction
@@ -164,6 +165,7 @@ class TransactionSerializer(serializers.ModelSerializer):
             'id',
             'transaction_type',
             'user',
+            'user_name',
             'wallet',
             'wallet_title',
             'wallet_address',
@@ -179,6 +181,9 @@ class TransactionSerializer(serializers.ModelSerializer):
     def get_wallet_title(self, obj):
         # Access the title field of the wallet object
         return obj.wallet.title
+
+    def get_user_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}"
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
