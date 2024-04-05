@@ -284,6 +284,11 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
             wallet.balance += amount_decimal
             wallet.save()
             print("After balance update:", wallet.balance)
+        elif transaction_status == 'done' and transaction_type == 'withdrawal':
+            print("Before balance update:", wallet.balance)
+            wallet.balance -= amount_decimal
+            wallet.save()
+            print("After balance update:", wallet.balance)
 
         if request.user.is_superuser:
             superusers = CustomUser.objects.filter(is_superuser=True)
