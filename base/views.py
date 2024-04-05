@@ -279,9 +279,6 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
         if amount_decimal <= Decimal(0):
             return Response({"error": "Transaction amount must be greater than zero"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if wallet.balance < amount_decimal:
-            return Response({"error": "Insufficient balance in the wallet"}, status=status.HTTP_400_BAD_REQUEST)
-
         # Update wallet balance based on transaction type and status
         if transaction_status == 'done' and transaction_type == 'deposit':
             print("Before balance update:", wallet.balance)
