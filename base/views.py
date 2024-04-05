@@ -265,6 +265,7 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
         wallet_id = data.get('wallet')
         amount = data.get('amount')
         transaction_type = data.get('transaction_type')
+        wallet_address = data.get('wallet_address')
         transaction_status = data.get('status')
 
         # Check if wallet exists and belongs to the current user
@@ -277,6 +278,9 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
         # Check if the transaction amount is greater than zero
         if amount_decimal <= Decimal(0):
             return Response({"error": "Transaction amount must be greater than zero"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if wallet.balance < amount_decimal:
+            return Response({"error": "Insufficient balance in the wallet"}, status=status.HTTP_400_BAD_REQUEST)
 
         # Update wallet balance based on transaction type and status
         if transaction_status == 'done' and transaction_type == 'deposit':
@@ -306,7 +310,8 @@ class TransactionListCreateApiView(generics.ListCreateAPIView):
             'wallet': wallet_id,
             'amount': amount_decimal,
             'status': transaction_status,
-            'transaction_type': transaction_type
+            'transaction_type': transaction_type,
+            'wallet_address': wallet_address
         }
         serializer = self.get_serializer(data=transaction_data)
         serializer.is_valid(raise_exception=True)
