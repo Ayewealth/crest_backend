@@ -146,14 +146,16 @@ class InvestmentSubscription(models.Model):
         return daily_return
 
     def update_total_return(self):
-        # Update the total return every day by adding the daily return
         days_passed = (timezone.now() - self.subscription_date).days
         if days_passed <= self.investment_plan.duration_days:
             daily_return = self.calculate_daily_return()
             self.total_return += daily_return
             self.save()
             return True
-        return False
+        else:
+            self.wallet.balance += self.total_return
+            self.wallet.save()
+            return False
 
     def __str__(self):
         return f"{self.user.email} - {self.investment_plan.plan}"
