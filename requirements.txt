@@ -1,5 +1,6 @@
 algoliasearch==2.6.3
 algoliasearch-django==2.0.0
+APScheduler==3.10.4
 asgiref==3.7.2
 asttokens==2.4.1
 attrs==22.2.0
@@ -18,8 +19,12 @@ distlib==0.3.6
 dj-database-url==2.1.0
 Django==4.1.7
 django-allauth==0.60.1
+django-apscheduler==0.6.2
+django-background-tasks==1.2.5
 django-cloudinary-storage==0.3.0
+django-compat==1.0.15
 django-cors-headers==3.14.0
+django-crontab==0.7.1
 django-environ==0.11.2
 django-filter==23.2
 django-resized==1.0.2
@@ -31,6 +36,7 @@ djoser==2.2.0
 drf-nested-routers==0.93.4
 dronekit==2.9.2
 dronekit-sitl==3.3.0
+environ==1.0
 executing==2.0.1
 filelock==3.10.1
 future==0.18.3
@@ -82,6 +88,7 @@ tornado==6.4
 traitlets==5.14.0
 typing_extensions==4.10.0
 tzdata==2023.3
+tzlocal==5.2
 urllib3==2.0.2
 virtualenv==20.21.0
 wcwidth==0.2.6
