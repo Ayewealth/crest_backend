@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-
+from captcha.fields import CaptchaField
 # Create your models here.
 
 
@@ -51,6 +51,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     address_document = models.ImageField(
         upload_to='kyc', blank=True, null=True)
 
+    # captcha = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
     kyc_verified = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
