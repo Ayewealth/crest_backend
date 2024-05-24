@@ -35,7 +35,7 @@ def start():
     if not scheduler.running:
         scheduler.add_job(
             daily_update_total_return,
-            trigger=IntervalTrigger(days=1),
+            trigger=IntervalTrigger(minutes=1),
             id='daily_update_total_return',
             name='Update total return every day',
             replace_existing=True,
