@@ -41,7 +41,7 @@ if ENVIRONMENT == "production" or POSTGRES_LOCALLY == True:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1',
                      'crest-backend.onrender.com', 'crestbackend.up.railway.app', 'crestholdingltd.com']
     CSRF_TRUSTED_ORIGINS = [
-        'https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app/',]
+        'https://crest-backend.onrender.com/', 'https://crestbackend.up.railway.app',]
 else:
     ALLOWED_HOSTS = ["*"]
 
