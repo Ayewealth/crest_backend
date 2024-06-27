@@ -1,3 +1,4 @@
+import logging
 from decimal import Decimal
 from .utils import Util
 from .serializers import *
@@ -18,8 +19,10 @@ from environ import Env
 env = Env()
 env.read_env()
 
+logger = logging.getLogger(__name__)
 
 # Create your views here.
+
 
 @api_view(['Get'])
 def endpoints(request):
@@ -208,6 +211,46 @@ class WalletRetriveUpdateDestroyApiView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Wallet.objects.all()
     serializer_class = WalletSerializer
     lookup_field = 'pk'
+
+    def perform_update(self, serializer):
+        wallet = self.get_object()
+        old_balance = wallet.balance
+        logger.debug(f"Old balance before update: {old_balance}")
+
+        serializer.save()
+
+        wallet.refresh_from_db()
+        new_balance = wallet.balance
+        logger.debug(f"New balance after update: {new_balance}")
+
+        if old_balance != new_balance:
+            user = wallet.user
+            email_subject = 'Wallet Balance Update'
+            email_body = f'Hi {user.first_name},\n\nYour wallet balance has been updated. New balance: {new_balance}.\n\nThank you.'
+            to_email = user.email
+
+            email_data = {
+                'email_subject': email_subject,
+                'email_body': email_body,
+                'to_email': to_email
+            }
+
+            logger.debug(f"Sending email to {to_email}")
+
+            Util.send_email(email_data)
+
+    def update(self, request, *args, **kwargs):
+        logger.debug("Update method called")
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        logger.debug(f"Instance before update: {instance}")
+        serializer = self.get_serializer(
+            instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        logger.debug("Serializer is valid, calling perform_update")
+        self.perform_update(serializer)
+        logger.debug("perform_update called successfully")
+        return Response(serializer.data)
 
 
 class InvestmentListCreateApiView(generics.ListCreateAPIView):

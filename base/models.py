@@ -151,7 +151,6 @@ class InvestmentSubscription(models.Model):
         if days_passed <= self.investment_plan.duration_days:
             daily_return = self.calculate_daily_return()
             self.total_return += daily_return
-            self.wallet.balance = self.total_return
             self.wallet.save()
             self.save()
             return True
