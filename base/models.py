@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from captcha.fields import CaptchaField
+import random
 # Create your models here.
 
 
@@ -68,6 +69,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class PasswordResetOTP(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    otp = models.CharField(max_length=4)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_used = models.BooleanField(default=False)
+
+    def generate_otp(self):
+        self.otp = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+        self.save()
 
 
 class Wallet(models.Model):

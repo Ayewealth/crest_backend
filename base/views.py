@@ -191,6 +191,41 @@ class ResendVerificationEmailView(generics.GenericAPIView):
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
 
+class PasswordResetRequestView(generics.GenericAPIView):
+    serializer_class = PasswordResetRequestSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data['email']
+
+        user = CustomUser.objects.get(email=email)
+        otp_record, created = PasswordResetOTP.objects.get_or_create(
+            user=user, is_used=False)
+        otp_record.generate_otp()
+
+        send_mail(
+            'Your Password Reset OTP',
+            f'Your OTP for password reset is: {otp_record.otp}',
+            'cresttradeworldwide@gmail.com',
+            [email],
+            fail_silently=False,
+        )
+
+        return Response({"message": "OTP sent to your email."}, status=status.HTTP_200_OK)
+
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    serializer_class = PasswordResetConfirmSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"message": "Password has been reset successfully."}, status=status.HTTP_200_OK)
+
+
 class UserProfileListApiView(generics.ListAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer

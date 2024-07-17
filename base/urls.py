@@ -14,6 +14,10 @@ urlpatterns = [
     path('email-verify/', views.VerificationMail.as_view(), name="email-verify"),
     path('resend-email-verification/', views.ResendVerificationEmailView.as_view(),
          name="resend-email-verification"),
+    path('password-reset/', views.PasswordResetRequestView.as_view(),
+         name='password-reset-request'),
+    path('password-reset-confirm/', views.PasswordResetConfirmView.as_view(),
+         name='password-reset-confirm'),
 
     path('signin/', views.CustomTokenObtainPairView.as_view(),
          name='token_obtain_pair'),

@@ -72,6 +72,52 @@ class ResendVerificationEmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 
+class PasswordResetRequestSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+    def validate_email(self, value):
+        try:
+            user = CustomUser.objects.get(email=value)
+        except CustomUser.DoesNotExist:
+            raise serializers.ValidationError(
+                "User with this email does not exist.")
+        return value
+
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    otp = serializers.CharField(max_length=4)
+    new_password = serializers.CharField(max_length=128)
+
+    def validate(self, attrs):
+        email = attrs.get('email')
+        otp = attrs.get('otp')
+        new_password = attrs.get('new_password')
+
+        try:
+            user = CustomUser.objects.get(email=email)
+            otp_record = PasswordResetOTP.objects.get(
+                user=user, otp=otp, is_used=False)
+        except (CustomUser.DoesNotExist, PasswordResetOTP.DoesNotExist):
+            raise serializers.ValidationError("Invalid email or OTP.")
+
+        if otp_record.is_used:
+            raise serializers.ValidationError(
+                "This OTP has already been used.")
+
+        attrs['user'] = user
+        return attrs
+
+    def save(self):
+        user = self.validated_data['user']
+        new_password = self.validated_data['new_password']
+        user.set_password(new_password)
+        user.save()
+        otp_record = PasswordResetOTP.objects.get(
+            user=user, otp=self.validated_data['otp'])
+        otp_record.is_used = True
+        otp_record.save()
+
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
