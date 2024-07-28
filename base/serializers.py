@@ -1,9 +1,12 @@
 from decimal import Decimal
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from django.templatetags.static import static
 from django.utils.dateformat import DateFormat
+from django.core.exceptions import ObjectDoesNotExist
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import AuthenticationFailed
 
 from .models import *
 
@@ -24,6 +27,54 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         data['kyc_verified'] = user.kyc_verified
         data['is_superuser'] = user.is_superuser
+
+        return data
+
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Customize token payload here
+        profile_id = None
+        try:
+            profile = UserProfile.objects.get(user=user)
+            profile_id = profile.id
+        except ObjectDoesNotExist:
+            pass
+
+        # Add profile_id to the token payload
+        token['profile_id'] = profile_id
+
+        return token
+
+
+class MyTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        # Extract the refresh token
+        refresh = RefreshToken(attrs['refresh'])
+
+        # Extract the user_id from the refresh token
+        user_id = refresh.get('user_id')
+        if not user_id:
+            raise AuthenticationFailed('Invalid token')
+
+        # Retrieve the user
+        try:
+            user = CustomUser.objects.get(id=user_id)
+        except CustomUser.DoesNotExist:
+            raise AuthenticationFailed('User not found', code='user_not_found')
+
+        # Add custom claims
+        profile_id = None
+        try:
+            profile = UserProfile.objects.get(user=user)
+            profile_id = profile.id
+        except ObjectDoesNotExist:
+            pass
+
+        data['profile_id'] = profile_id
 
         return data
 
@@ -117,6 +168,7 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             user=user, otp=self.validated_data['otp'])
         otp_record.is_used = True
         otp_record.save()
+
 
 class WalletSerializer(serializers.ModelSerializer):
     class Meta:

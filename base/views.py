@@ -8,7 +8,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse
 from rest_framework.permissions import IsAuthenticated
@@ -40,6 +40,10 @@ def endpoints(request):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class CustomRefreshTokenView(TokenRefreshView):
+    serializer_class = MyTokenRefreshSerializer
 
 
 class UserCreateApiView(generics.CreateAPIView):
